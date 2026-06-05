@@ -1,0 +1,7 @@
+id,name,class,attack_type,hp,atk,mag,def,res,spd,skl,lck,mov,range,cost
+halden,Ser Halden,Knight,physical,30,15,0,10,6,6,8,5,4,1,9
+rookwood,Rookwood,Myrmidon,physical,24,12,0,6,5,15,15,9,6,1,8
+brennan,Brennan,Soldier,physical,28,14,0,9,6,9,9,6,5,1,6
+sable,Sable,Archer,physical,26,13,0,7,6,11,11,7,5,2,5
+wisp,Wisp,Cleric,magic,24,7,13,5,9,12,8,8,5,2,5
+pyraxis,Pyraxis,Battlemage,magic,25,0,19,4,9,7,9,6,5,2,5
