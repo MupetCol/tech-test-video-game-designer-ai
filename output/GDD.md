@@ -1,6 +1,6 @@
 # Hollow Crown — Class Counter System (Living GDD)
 
-**System:** v0.3 combat resolution · **Audience:** development team · **Status:** balancing pass
+**System:** v0.3 combat resolution · **Audience:** combat designers · **Status:** rebalanced (`output/units.balanced.csv`)
 
 ---
 
@@ -14,11 +14,13 @@ The goal is **situational strength, not universal dominance**. Deployment `cost`
 
 ## Rules: how counters form
 
-**Physical vs. magic.** Damage is `max(1, power − defense)`, swapping tracks by `attack_type`. High `def` units are physical sinks; high `res` units are magic sinks. No stat covers both, so mixed enemy squads force mixed answers. This is the primary axis for armored targets: **Throne Guard** (`def` 12, `res` 5) shrugs off physical chip but folds to magic; **Gate Wretch** Brigands (`def` 5, `res` 2) are soft on both, especially magic.
+**Physical vs. magic.** Damage is `max(1, power − defense)`, swapping tracks by `attack_type`. High `def` units are physical sinks; high `res` units are magic sinks. No stat covers both, so mixed enemy squads force mixed answers. **Throne Guard** (`def 12, res 5`) shrugs off physical chip but folds to magic; **Gate Wretch** Brigands (`def 5, res 2`) are soft on both.
 
-**Speed doubling.** A +5 `spd` edge adds a full extra strike on the attack turn—often more decisive than a few points of `atk`/`mag`. Doubling also feeds accuracy (`hit%` penalizes target `spd`) and crit (`skl`/`lck`). **Myrmidons** are built to cross +5 against slow classes; **Knights** trade tempo for survivability.
+**Speed doubling.** A +5 `spd` edge adds a full extra strike on the attack turn. Doubling also feeds accuracy and crit. **Myrmidons** cross +5 against slow classes; **Knights** trade tempo for survivability.
 
-**Counterattacks.** Defenders strike back under the same rules. Bulky units create **attrition counters** against glass cannons; fast units that double first create **burst counters**. Class design is choosing which exchange you want to win.
+**Counterattacks.** Defenders strike back under the same rules. Bulky units create **attrition counters** against glass cannons; fast units that double first create **burst counters**.
+
+**Target triangle (post-rebalance):** Armor (Knight/Soldier) ↔ Speed (Myrmidon/Archer) ↔ Magic (Cleric/Battlemage). No class should sit above ~55% aggregate duel WR or below ~45%.
 
 ---
 
@@ -26,41 +28,67 @@ The goal is **situational strength, not universal dominance**. Deployment `cost`
 
 | Class | Battlefield job | Where it shines | Where it folds |
 |---|---|---|---|
-| **Knight** | Frontline anchor; holds lanes and body-blocks. | **Encounter A:** walls Brigands (`atk` 11 vs `def` 12). **Encounter B:** pins Throne Guards while allies answer the Magus. | Low `res` → magic magnet. Slow `spd` → doubled. |
-| **Soldier** | Flex infantry; stable physical damage and moderate bulk. | Budget filler; reliable vs. soft targets (Brigands, Acolyte `def` 3). | Out-tanked, out-sped, or out-ranged by specialists. |
-| **Myrmidon** | Duelist; crosses `spd` thresholds to delete a target. | **Encounter A:** doubles Brigands (`spd` 7). **Encounter B:** doubles Throne Guard (`spd` 6) if it reaches them. | Poor attrition without +5; fragile if engaged on even `spd`. |
-| **Archer** | Physical poke at `range` 2. *(Range/mov matter on-map; duel sim ignores them.)* | Chips low-`def` targets (Brigands, Crown Magus `def` 4) before melee commit. | Loses straight trades to fast closers and armored fronts alone. |
-| **Cleric** | Magic support at low `cost`; threatens `res`-weak enemies. | **Encounter A:** `mag` 12 into Brigand `res` 2 / Acolyte `res` 7. | Needs a front line; cannot solo high-`res` walls. |
-| **Battlemage** | Siege caster; concentrated `mag` vs. high-`def`/low-`res` armor. | **Encounter B:** cracks Throne Guard `res` 5 where physical stalls. | High `cost`, low bulk—dies if reached without anchors. |
+| **Knight** | Frontline anchor (`def 10`, cost 9). | **Encounter A:** absorbs Brigand `11 atk`. **Encounter B:** soaks Magus while allies break Guards. | Low `res 6` → magic magnet. `15 atk` only chips Guard `def 12` (`3` dmg). |
+| **Soldier** | Flex infantry (cost 6). | Budget frontline; `14 atk` vs soft targets. **Encounter B:** supplemental guard chip. | Out-specialized by Knight, Myrmidon, or mages. |
+| **Myrmidon** | Speed duelist (`spd 15`, cost 8). | **Encounter A:** doubles Brigands. **Encounter B:** doubles Crown Magus (`spd 7`). | Random guard duels (`12 atk` vs `def 12` = 1) in squad chaos. |
+| **Archer** | Physical poke at `range 2`. *(Sim ignores range.)* | **Encounter A:** chips Brigands/Magus from safety in real play. Mage-hunter in duels. | Loses melee trades vs armor and speed without kiting. |
+| **Cleric** | Magic support / armor check (`mag 13`, cost 5). | **Encounter A & B:** `13−res` into Acolyte and Throne Guard `res 5`. Hard-counters Knight in duels. | Needs front line; loses speed war to Myrmidon. |
+| **Battlemage** | Burst siege caster (`mag 19`, cost 5). | **Encounter B:** `19−5=14` vs Guard `res` — fastest armor break. | Glass (`def 4`, `hp 25`); dies if focused without anchors. |
 
 ---
 
 ## Key numbers
 
-**Target win-rate bands** (1v1 duel lens via `simulate.py`—sanity check, not squad play):
+**Rebalanced duel results** (`simulate.py`, 2000 trials/pair, seed 42):
 
-| Band | Aggregate duel WR | Meaning |
-|---|---|---|
-| Core | 45–55% | No trap picks, no auto-includes. |
-| Specialist high | 55–70% | Favored stat matchups (magic vs. low `res` armor). |
-| Specialist low | 30–45% | Hard counters (slow tank vs. fast doubler). |
+| Unit | Cost | WIN% | WIN%/COST |
+|---|---:|---:|---:|
+| Brennan (Soldier) | 6 | 54.9% | 9.14 |
+| Ser Halden (Knight) | 9 | 53.5% | 5.94 |
+| Rookwood (Myrmidon) | 8 | 49.1% | 6.13 |
+| Pyraxis (Battlemage) | 5 | 48.7% | 9.73 |
+| Sable (Archer) | 5 | 47.0% | 9.40 |
+| Wisp (Cleric) | 5 | 46.9% | 9.38 |
 
-Current roster (seed 7, 5000 trials/pair) spans **23–78%**—counter structure works; costs and spreads need tightening toward core.
+- **WR spread:** 7.9 pp (46.9–54.9%) — no auto-includes, no trap picks.
+- **Mid-tier WIN%/COST:** ~9.1–9.7 (Soldier, Cleric, Archer, Battlemage cluster).
+- **Premium pricing:** Knight and Myrmidon intentionally lower WIN%/COST at costs 9 and 8.
 
-**Cost ranges by role:** Support caster 4 (Cleric) · Flex physical 5 (Soldier, Archer) · Elite tank 6 (Knight) · Speed duelist 7 (Myrmidon) · Siege caster 9 (Battlemage). Target flat **WIN%/cost** (~9–11%/cost at 50% WR).
+**Cost bands (final roster):** Cleric / Archer / Battlemage **5** · Soldier **6** · Myrmidon **8** · Knight **9**.
 
-**Budget-20 squad templates** (reference encounters, fixed enemies):
+**Target matchup bands** (duel lens, design targets — not all pairings need to land here):
 
-*Encounter A — "The Sunken Gate"* (3× Brigand + 1× Acolyte): tests whether multiple squads work, not one auto-include.
+| Band | Duel WR | Meaning |
+|---|---:|---|
+| Hard counter | ≥65% | Role counter landed (e.g. Cleric vs Knight). |
+| Even | 45–55% | Healthy trade. |
+| Bad | ≤35% | Hard-countered specialist. |
 
-- **Bastion + Hex** — Halden (6) + Brennan (5) + Sable (5) + Wisp (4): Knight walls Brigands; Cleric magic hits both `res` profiles.
-- **Blitz** — Rookwood (7) + Brennan (5) + Wisp (4) + Sable (5) = 21 → drop Sable: Myrmidon doubles Brigands; magic answers Acolyte.
+---
 
-*Encounter B — "The Hollow Throne"* (2× Knight + 1× Battlemage): `def` wall plus `mag` punch—physical armor alone must not be the universal answer.
+## Budget-20 squad templates
 
-- **Armor break** — Halden (6) + Pyraxis (9) + Brennan (5): Battlemage cracks Guard `res` 5; Knight pins; Soldier flexes on Magus.
-- **Bastion + Hex** — Halden + Brennan + Sable + Wisp (20): viable but weaker into `res` 9 Magus—proves Encounter B punishes all-round physical lineups.
-- **Duelist flanking** — Rookwood (7) + Wisp (4) + Brennan (5) + Halden (6): speed bypass plus magic; no single glass cannon required.
+Validated against `data/encounters.md` design questions; WIN% from `sim/simulate-encounters.py` (random pairing model — see limitations in `BALANCE_REPORT.md`).
+
+### Encounter A — "The Sunken Gate" (3× Brigand + 1× Acolyte)
+
+| Squad | Units (cost) | Role |
+|---|---:|---|
+| **Gate Breakers** | Rookwood + Wisp + Brennan (**19**) | Speed clears Brigands; Cleric answers Acolyte magic. |
+| **Arcane Rush** | Wisp + Pyraxis + Rookwood (**18**) | Magic burst + speed; Pyraxis one-shots Brigands (`19−2`). |
+| **Heavy Door** | Halden + Wisp + Sable (**19**) | Knight anchors; magic checks Acolyte; Archer poke (range 2 in real play). |
+
+**Pass:** multiple viable squads; Halden at cost 9 prevents `2× Knight` spam.
+
+### Encounter B — "The Hollow Throne" (2× Guard + 1× Magus)
+
+| Squad | Units (cost) | Role |
+|---|---:|---|
+| **Split Answer** | Wisp + Rookwood + Brennan (**19**) | Magic breaks Guards; Myrmidon doubles Magus — strong on paper, ~41% in random-duel sim. |
+| **Arcane Battery** | Wisp + Pyraxis + Brennan (**16**) | Double magic vs `def 12`/`res 5` Guards; strongest in coarse sim (~62%). |
+| **Bastion** | Halden + Wisp + Brennan (**20**) | Wisp carries guard damage; Halden soaks — Halden cannot solo Guards (`15−12=3`). |
+
+**Pass:** no universal pick; physical armor alone fails Guard wall; no solo glass-cannon carry.
 
 ---
 
@@ -68,8 +96,12 @@ Current roster (seed 7, 5000 trials/pair) spans **23–78%**—counter structure
 
 Before deployment, the player reads the enemy row—armored, casting, fast—and **names the job** each slot fills: anchor, break armor, double a target, poke at range. Winning feels like correct tool choice under 20 points. Losing teaches the counter: physical into Throne Guard grinds; magic without a front line collapses; a slow tank doubled by a Myrmidon dies before it trades back.
 
-The duel sim keeps no class near 80% aggregate; Encounter A/B keep no single unit mandatory in every budget-20 answer.
+---
+
+## Sim limitations (GDD scope boundary)
+
+The duel and encounter reference sims **do not model** `range 2` kiting, movement, terrain, healing, or focus-fire. Archer and Cleric are **stronger in real encounters** than random-duel WIN% suggests; Split Answer squads are **undervalued** when Wisp cannot be prioritized onto Guards. Validate squad templates in playtest, not duel WR alone.
 
 ---
 
-*Living doc — update when `combat-rules.md` or `units.csv` change. Re-verify Encounter A/B templates after each balance pass.*
+*Living doc — update when `combat-rules.md` or `output/units.balanced.csv` change. Re-verify squad templates after each balance pass.*

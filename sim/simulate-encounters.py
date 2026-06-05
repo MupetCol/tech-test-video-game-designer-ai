@@ -148,7 +148,7 @@ def run_encounter(enc_key, units_by_id, trials, rng):
 
 def main():
     ap = argparse.ArgumentParser(description="Hollow Crown encounter squad tester")
-    ap.add_argument("--units", default="output/units-rebalanced.csv")
+    ap.add_argument("--units", default="output/units.balanced.csv")
     ap.add_argument("--trials", type=int, default=2000, help="battles per squad")
     ap.add_argument("--seed", type=int, default=42)
     args = ap.parse_args()

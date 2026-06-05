@@ -21,7 +21,7 @@ The delivery plan listed nine phases, nine copy-paste prompts, optional matchup-
 | Phase 0 — Baseline + matrix | 5000-trial sim, optional `matchup_matrix.py` | Ran `simulate.py` (2000 trials); matrix computed inline during diagnosis prompts — no separate script until later |
 | Phase 1 — Diagnosis | Per-unit formula audit | **First major prompt** — full diagnosis table with auto-include/trap flags |
 | Phase 2 — GDD | `output/GDD.md` | GDD drafted (ChatGPT-polished prompt from plan Prompt 3); numbers updated after final CSV |
-| Phase 3–4 — Iterations 1 & 2 | `units.iter1.csv` + `units.balanced.csv` | `data/unit-iteration-1.csv` then `output/units-rebalanced.csv`; second pass was three fields, not a full rewrite |
+| Phase 3–4 — Iterations 1 & 2 | `units.iter1.csv` + `units.balanced.csv` | `data/unit-iteration-1.csv` then `output/units.balanced.csv`; second pass was three fields, not a full rewrite |
 | Phase 5 — Encounter sanity | Manual squad notes | **Encounter squad prompt** + later **`simulate-encounters.py`** — sim contradicted manual squad ranking |
 | Phase 6 — Reports | `BALANCE_REPORT.md` | Written after all sims settled |
 | Phase 7 — PR | `submission/<name>` branch | Out of scope for this doc |
@@ -150,7 +150,7 @@ ChatGPT was used to polish section structure (intent → rules → roles → num
 
 **Reality:** For six units, encounter squad sim yielded more assessment value than a pairwise matrix script. Staging AI errors would have **misled the balance** for the sake of a workflow doc.
 
-**Human call:** Skip Prompt 8 staging; skip standalone matrix; merge iteration 2 into a small final pass (`units-rebalanced.csv`, three fields changed).
+**Human call:** Skip Prompt 8 staging; skip standalone matrix; merge iteration 2 into a small final pass (`output/units.balanced.csv`, three fields changed).
 
 ---
 
@@ -207,8 +207,19 @@ A realistic pipeline for **highly variable per game balancing**, but common skel
 | File | AI contribution |
 |---|---|
 | `data/unit-iteration-1.csv` | AI-proposed; human sim-filtered |
-| `output/units-rebalanced.csv` | AI-proposed final pass; human sim-filtered |
+| `output/units.balanced.csv` | AI-proposed final pass; human sim-filtered |
 | `output/GDD.md` | ChatGPT structure + Cursor rule anchoring |
 | `output/BALANCE_REPORT.md` | Cursor-drafted from sim logs + thread diagnoses |
 | `sim/simulate-encounters.py` | Cursor-generated; human-specified model limits |
 | `output/DESIGN_AI_WORKFLOW.md` | This document |
+
+---
+
+## 9. Commands to reproduce
+
+```bash
+python sim/simulate.py --units output/units.balanced.csv --trials 2000 --seed 42
+python sim/simulate-encounters.py --units output/units.balanced.csv --trials 2000 --seed 42
+```
+
+**Closing principle:** Treat AI as a **junior systems designer who never runs the build**. The moment sim output contradicts the narrative, the sim wins — and that contradiction is itself a deliverable.
